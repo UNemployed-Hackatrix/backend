@@ -42,3 +42,30 @@ exports.create_user_document = functions.auth.user().onCreate((user, context) =>
 	console.error('[Create user document] Invalid user id', user.uid)
 	return false
 })
+
+// this function deletes document asociated with the user when the user has been deleted
+exports.delete_user_document = functions.auth.user().onDelete((user, context) => {
+	if (user.uid) {
+
+		//user document
+		const u_doc = '/users/' + user.uid
+
+		console.log('[Delete user document] Function will be affecting', user.uid)
+
+		console.log('[Delete user document] Accessing to document', u_doc)
+		const docRef = db.collection('users').doc(user.uid)
+
+		console.log('[Delete user document] Deleting document', u_doc)
+
+		return docRef.delete().catch(error => {
+			console.error(
+				'[Delete user document] There was a problem at trying to eliminate the document',
+				u_doc,
+				'\nWith error:', error
+			)
+		})
+
+	}
+	console.error('[Delete user document] Invalid user id', user.uid)
+	return false
+})
